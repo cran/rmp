@@ -9,24 +9,21 @@ function(ydis, k=length(ydis), nrep, nb, alpha=1, theta=alpha, sigma=0,
 	n <- length(ydis)
 	if((mixing_type=="2PD") & (mixing_hyperprior==TRUE))
 	{
-		cat("Error: Random hyperparameters for the 2PD prior are not implemented\n")
-		return()
+		stop("Error: Random hyperparameters for the 2PD prior are not implemented\n")
 	}
 	if((algo=="polya-urn") & k<n)
 	{
-		cat("Warning: If algo='polya-urn', the upper bound is fixed to the sample size n\n")
-		k <- n
+		stop("Warning: If algo='polya-urn', the upper bound is fixed to the sample size n\n")
 	}
 	if(!((algo=="polya-urn") | (algo=="slice")))
 	{
-		cat("Error: Only 'slice' or 'polya-urn' are allowed values of 'algo'\n")
-		return()
+		stop("Error: Only 'slice' or 'polya-urn' are allowed values of 'algo'\n")
 	}
 	if(is.null(lb)) lb <- max(0,min(ydis)-10)
 	if(is.null(ub)) ub <- max(ydis)+10
 	print <-  as.integer(table(factor(print, levels=1:6)))
 	start.loop <- Sys.time()			
-	res <- .C("rmg"	,
+	res <- .C("rmg_C"	,
 			as.integer(c(n,k,ub+1,nrep,mixing_hyperprior,basemeasure_hyperprior,algo=="slice")),
 			as.double(c(mu0, kap, atau, btau,a_a,b_a)),
 			as.double(ydis),
@@ -60,11 +57,11 @@ function(ydis, k=length(ydis), nrep, nb, alpha=1, theta=alpha, sigma=0,
 	}
 	else
 	{
-		mu<-matrix(res$mu,byrow=T,nrow=nrep,ncol=k)
-		tau<-matrix(res$tau,byrow=T,nrow=nrep,ncol=k)
-		pi<-matrix(res$pi,byrow=T,nrow=nrep,ncol=k)
-		enne<-matrix(res$enne,byrow=T,nrow=nrep,ncol=k)
-		sorted.n<-t(apply(enne[(nb+1):nrep,],1,sort,decreasing=T))
+		mu<-matrix(res$mu,byrow=TRUE,nrow=nrep,ncol=k)
+		tau<-matrix(res$tau,byrow=TRUE,nrow=nrep,ncol=k)
+		pi<-matrix(res$pi,byrow=TRUE,nrow=nrep,ncol=k)
+		enne<-matrix(res$enne,byrow=TRUE,nrow=nrep,ncol=k)
+		sorted.n<-t(apply(enne[(nb+1):nrep,],1,sort,decreasing=TRUE))
 		n.mean <- apply(sorted.n,2,mean)
 		arezero = function(x) sum(x==0)
 		groups = k - mean( apply(sorted.n,1,arezero))
@@ -73,7 +70,7 @@ function(ydis, k=length(ydis), nrep, nb, alpha=1, theta=alpha, sigma=0,
 		post.pi<-apply(pi[(nb+1):nrep,],2,mean)
 	}
 
-	cmf<-matrix(res$probability,byrow=T,nrow=nrep,ncol=ub+1)
+	cmf<-matrix(res$probability,byrow=TRUE,nrow=nrep,ncol=ub+1)
 	pmf<-cmf-cbind(rep(0,nrep),cmf[,1:(ncol(cmf)-1)])
 	post.pmf<-try(apply(pmf[(nb+1):nrep,],2,mean))
 	sorted.p<-try(apply(pmf[(nb+1):nrep,],2,sort))
@@ -98,7 +95,8 @@ function(ydis, k=length(ydis), nrep, nb, alpha=1, theta=alpha, sigma=0,
 	
 	if(pdfwrite)
 	{
-		cat("\nWriting pdf files with traceplots ...\n")
+	  oldpar <- par(no.readonly = TRUE)
+	  on.exit(par(oldpar))       
 		filename<-paste("traceplots ",date(),".pdf",sep="")
 		pdf(filename)
 		plot(res$mu0,  type='l', xlab="MU_0")
@@ -133,7 +131,6 @@ function(ydis, k=length(ydis), nrep, nb, alpha=1, theta=alpha, sigma=0,
 		points(lb:ub+.2,post.pmf[lb:ub+1],col=4,type='h')
 		dev.off()
 		}
-		cat(paste("Pdf files with traceplots and posterior summaries written in ",getwd(),"\n\n",sep=""))
 	}
     out<-structure(
 		list(name = "Mixture of rounded Gaussians", mixing_type=mixing_type,
@@ -145,7 +142,6 @@ function(ydis, k=length(ydis), nrep, nb, alpha=1, theta=alpha, sigma=0,
 		parameters = list(post.mu=post.mu, post.tau=post.tau, post.pi=post.pi, post.alpha=post.alpha), 
   	          clustering = list(nmean=n.mean,groups=groups)), 
 		class  = "rmpobject")
-	cat("\n")
     invisible(out)
 }
 #

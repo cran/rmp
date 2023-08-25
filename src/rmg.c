@@ -13,7 +13,7 @@
 /*============================================================================*/
 #include<R.h>
 #include<Rmath.h>
-void rmg(int *ipar, double *hyperpar, double *ydis, int *print, double *alpha, 
+void rmg_C(int *ipar, double *hyperpar, double *ydis, int *print, double *alpha, 
 	double *pdp_par, double *mu0, double *kappa, double *atau, double *btau,
 	double *mu, double *tau, double *pi, double *minslice, double *probability, double *enne)
 
@@ -332,7 +332,7 @@ for(j = 0; j < n; j++)
 		probs[h] =  probs[h]/mass;	
 		cum_p += probs[h];
 		take = (rand < cum_p);
-	if(flag & print_multinomial & nh[h] > 0) Rprintf("%f,",probs[h]);
+	if((flag) & (print_multinomial) & (nh[h] > 0)) Rprintf("%f,",probs[h]);
 	  	if(take)
 		{ 
 			class = h+1;
@@ -544,6 +544,3 @@ if(flag & print_post_prob) Rprintf("%f, ", probability[(i*grid)+l]);
 PutRNGstate();
 } 
 // end of all!
-
-
-

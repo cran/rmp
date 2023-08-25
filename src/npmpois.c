@@ -5,7 +5,7 @@
 /*============================================================================*/
 #include<R.h>
 #include<Rmath.h>
-void npmpois(int *ipar, double *alpha, double *pdp_par, double *hyperpar, double *y,
+void npmpois_C(int *ipar, double *alpha, double *pdp_par, double *hyperpar, double *y,
 		int *print, double *lambda, double *pi, double *ach, double *bch,
 		double *minslice,  double *probability, double *enne)
 {
@@ -243,7 +243,7 @@ for(j = 0; j < n; j++)
 		probs[h] =  probs[h]/mass;	
 		cum_p += probs[h];
 		take = (rand < cum_p);
-	if(flag & print_multinomial & nh[h] > 0) Rprintf("%f,",probs[h]);
+	if((flag) & (print_multinomial) & (nh[h] > 0)) Rprintf("%f,",probs[h]);
 	  	if(take)
 		{ 
 			class = h+1;
@@ -259,7 +259,7 @@ for(j = 0; j < n; j++)
 }
 }
 if(flag & print_posterior){
-Rprintf("#######################################################################################\n");
+Rprintf("#######################################################################################\n  ");
 Rprintf("Step 3 and 4: Update lambda and pi from the conditional posterior \n");
 Rprintf("#######################################################################################\n");
 }

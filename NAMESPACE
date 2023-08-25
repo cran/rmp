@@ -1,4 +1,4 @@
-useDynLib(rmp)
+useDynLib(rmp, .registration = TRUE)
 import(stats)
 import(utils)
 importFrom("grDevices", "dev.off", "pdf")

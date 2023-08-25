@@ -10,23 +10,20 @@ function(y, k=length(y), nrep, nb, alpha=1, theta=alpha, sigma=0, mixing_hyperpr
 	n <- length(y)
 	if((mixing_type=="2PD") & (mixing_hyperprior==TRUE))
 	{
-		cat("Error: Random hyperparameters for the 2PD prior are not implemented\n")
-		return()
+		stop("Error: Random hyperparameters for the 2PD prior are not implemented\n")
 	}
 	if((algo=="polya-urn") & k<n)
 	{
-		cat("Warning: If algo='polya-urn', the upper bound for the number of components is fixed to the sample size n\n")
-		k <- n
+		stop("Warning: If algo='polya-urn', the upper bound for the number of components is fixed to the sample size n\n")
 	}
 	if(!((algo=="polya-urn") | (algo=="slice")))
 	{
-		cat("Error: Only 'slice' or 'polya-urn' are allowed values of 'algo'\n")
-		return()
+		stop("Error: Only 'slice' or 'polya-urn' are allowed values of 'algo'\n")
 	}
 
 	print <-  as.integer(table(factor(print, levels=1:5)))
 	start.loop <- Sys.time()	
-	res <- .C("npmpois",
+	res <- .C("npmpois_C",
 				as.integer(c(n,k,ub+1,nrep, mixing_hyperprior, basemeasure_hyperprior, algo=="slice")),
 				alpha=as.double(rep(alpha, nrep)),
 				PDp_par=as.double(c(sigma, theta)),
@@ -42,7 +39,6 @@ function(y, k=length(y), nrep, nb, alpha=1, theta=alpha, sigma=0, mixing_hyperpr
 				enne=as.double(rep(c(n,rep(0,k-1)),nrep)),
 				PACKAGE="rmp"
 				)
-	cat("MCMC done\n")
 	end.loop <- Sys.time()
 	lambda<-matrix(res$lambda,byrow=T,nrow=nrep,ncol=k)
 	pi<-matrix(res$pi,byrow=T,nrow=nrep,ncol=k)
@@ -71,7 +67,9 @@ function(y, k=length(y), nrep, nb, alpha=1, theta=alpha, sigma=0, mixing_hyperpr
 	}
 	
 	if(pdfwrite){
-		cat("\nWriting pdf files with traceplots ...\n")
+		#cat("\nWriting pdf files with traceplots ...\n")
+	  oldpar <- par(no.readonly = TRUE)
+	  on.exit(par(oldpar))       
 		filename<-paste("traceplots ",date(),".pdf",sep="")
 		pdf(filename)
 		par(mfrow=c(3,3))
@@ -87,7 +85,7 @@ function(y, k=length(y), nrep, nb, alpha=1, theta=alpha, sigma=0, mixing_hyperpr
 		plot(lb:ub,empirical.pmf,type='h',main="", ylab="pmf", xlab="estimated pmf (red) and empirical pmf (black)") 
 		points(lb:ub+.4,post.pmf[lb:ub+1],col=2, type='h')
 		dev.off()
-		cat(paste("Pdf files with traceplots and posterior summaries written in ",getwd(),"\n\n",sep=""))
+		#cat(paste("Pdf files with traceplots and posterior summaries written in ",getwd(),"\n\n",sep=""))
 	}
 
     out<-structure(
@@ -99,7 +97,7 @@ function(y, k=length(y), nrep, nb, alpha=1, theta=alpha, sigma=0, mixing_hyperpr
 		  upper.95 = pmf97.5[lb:ub+1], domain = lb:ub, lb=lb, ub=ub),
 		  parameters = list(post.lambda=post.lambda, post.pi=post.pi, post.alpha=post.alpha),
   	            clustering = list(nmean=n.mean,groups=groups)), class  = "rmpobject")
-	cat("\n")
+#	cat("\n")
     invisible(out)
     	}
 

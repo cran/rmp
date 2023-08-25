@@ -118,7 +118,7 @@ R code and porting by A. Canale, C code by A. Canale with minor contributions by
 rmg
 }
 \examples{
-\dontrun{
+\donttest{
 data(ethylene)
 y <- tapply(ethylene$impl,FUN=mean,INDEX=ethylene$id)
 z <- tapply(ethylene$dose,FUN=mean,INDEX=ethylene$id)
@@ -129,7 +129,3 @@ pmf.control = dpmpoiss(y0, k=20, nrep=11000, nb=1000, alpha=1, a=1, b=1,
 lb=5, ub=24, plot.it=TRUE)
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

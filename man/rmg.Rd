@@ -128,7 +128,7 @@ R code and porting by A. Canale, C code by A. Canale with minor contributions by
 dpmpoiss
 }
 \examples{
-\dontrun{
+\donttest{
 data(ethylene)
 y <- tapply(ethylene$impl,FUN=mean,INDEX=ethylene$id)
 z <- tapply(ethylene$dose,FUN=mean,INDEX=ethylene$id)
