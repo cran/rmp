@@ -3,7 +3,7 @@
 // with rounded mixture of Gaussian kernels as in 
 // "Canale, A. and Dunson, D. B. (2011), _Bayesian Kernel Mixtures for Counts_, 
 // Journal of American Statistical Association, 106, 1528-1539."
-// C code by Antonio Canale <antonio.canale@unito.it> 
+// C code by Antonio Canale <antonio.canale@unipd.it> 
 // part of the code is taken from Nicola Lunardon <lunardon@stat.unipd.it> 
 //
 // Version 2.0 - 2015 Gen-Feb (by Antonio Canale)
@@ -468,7 +468,7 @@ for(h = 0; h < k; h++)
 	tau[(i*k)+h] = rgamma(ahattau[h], 1/bhattau[h]);
 	mu[(i*k)+h]  = rnorm(muhat[h], sqrt(kappahat[h]/tau[(i*k)+h]) )	;
 	enne[(i*k)+h] = nh[h];
-if(flag & print_posterior)	Rprintf("%f %f %f %f %f  \n", nh[h],ybar[h],ydev[h],mu[(i*k)+h],tau[(i*k)+h] );
+if(flag & print_posterior)	Rprintf("%i %f %f %f %f  \n", nh[h],ybar[h],ydev[h],mu[(i*k)+h],tau[(i*k)+h] );
 }
 
 
@@ -504,7 +504,7 @@ Rprintf("Step 5: Compute posterior PMF    \n");
 Rprintf("##########################################################\n");
 }
 
-if(flag & print_post_prob) Rprintf("\n The probabilities are ", probability[(i*grid)]);
+if(flag & print_post_prob) Rprintf("\n The probabilities are %f", probability[(i*grid)]);
 newtau= rgamma(atau[i], 1/btau[i]);
 newmu =rnorm(mu0[i], sqrt(kappa[i]/newtau));
 for(l = 0; l < grid; l++){

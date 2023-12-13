@@ -1,7 +1,7 @@
 /*============================================================================*/
 // Function performing univariate probability mass function estimation
 // with nonparametric (DP or 2PD) mixture of Poissons 
-// C code by Antonio Canale <antonio.canale@unito.it> 
+// C code by Antonio Canale <antonio.canale@unipd.it> 
 /*============================================================================*/
 #include<R.h>
 #include<Rmath.h>
@@ -405,7 +405,7 @@ ach[i] = rnorm(meanlambda, sqrt(bch[i]/occcl)); //3.58;//
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-if(flag & print_post_prob) Rprintf("\n The probabilities are ", probability[(i*grid)]);
+if(flag & print_post_prob) Rprintf("\n The probabilities are %f", probability[(i*grid)]);
 for(l = 0; l < grid; l++)
 {
 	probability[(i*grid)+l] = 0;
